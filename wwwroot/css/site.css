@@ -20,3 +20,9 @@ html {
 body {
   margin-bottom: 60px;
 }
+.nobullet {
+    list-style-type: none;
+}
+a {
+    text-decoration: none;
+}
