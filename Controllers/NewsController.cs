@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NewsModule.Data;
 using NewsModule.Models;
 using Npgsql;
@@ -25,7 +26,7 @@ namespace NewsModule.Controllers
         // GET: NewsController/Details/5
         public ActionResult Details(int id)
         {
-            Article article = new Article();
+           Article article = new Article();
            using(NewsModuleContext db = new NewsModuleContext())
            {
                 article = db.Articles.Find(id);
@@ -54,45 +55,65 @@ namespace NewsModule.Controllers
         }
 
         // GET: NewsController/Edit/5
-        public ActionResult Edit(int id)
+        public  IActionResult Edit(int id)
         {
-            return View();
+            Article? article = new Article();
+            using (NewsModuleContext db = new NewsModuleContext())
+            {
+                if (id != null)
+                {
+                    article = db.Articles.FirstOrDefault(p => p.Id == id);
+                }
+            }
+            return View(article);
+           
         }
 
         // POST: NewsController/Edit/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<IActionResult> Edit(Article article)
         {
-            try
+            using (NewsModuleContext db = new NewsModuleContext())
             {
-                return RedirectToAction(nameof(Index));
+                db.Articles.Update(article);
+                await db.SaveChangesAsync();
             }
-            catch
-            {
-                return View();
-            }
+            return RedirectToAction("Index");
         }
 
         // GET: NewsController/Delete/5
         public ActionResult Delete(int id)
         {
-            return View();
+            Article? article = new Article();
+            using (NewsModuleContext db = new NewsModuleContext())
+            {
+                if (id != null)
+                {
+                    article = db.Articles.FirstOrDefault(p => p.Id == id);
+                }
+            }
+            return View(article);
         }
 
         // POST: NewsController/Delete/5
+        //[ValidateAntiForgeryToken]
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        [ActionName("Delete")]
+        public IActionResult ConfirmDelete(int id)
         {
-            try
+            using (NewsModuleContext db = new NewsModuleContext())
             {
-                return RedirectToAction(nameof(Index));
+                if (id != null)
+                {
+                    Article? article = db.Articles.FirstOrDefault(p => p.Id == id);
+                    if (article != null)
+                    {
+                        db.Articles.Remove(article);
+                        db.SaveChanges();
+                    }
+                }
             }
-            catch
-            {
-                return View();
-            }
+            return RedirectToAction("Index");
         }
     }
 }

@@ -5,6 +5,13 @@
 }
 
 <h1>@Html.DisplayFor(model => model.Title)</h1>
+@if (Model == null)
+{
+    <p>This item was not found</p>
+}
+else
+{
+    
 
 <div>
     <hr />
@@ -23,6 +30,8 @@
     </dl>
 </div>
 <div>
-    @Html.ActionLink("Редактировать", "Edit", new { /* id = Model.PrimaryKey */ }) |
+    @Html.ActionLink("Редактировать", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Удалить", "Delete", new { id = Model.Id }) |
     <a asp-action="Index">Вернуться к списку новостей</a>
 </div>
+}
