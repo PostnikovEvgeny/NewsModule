@@ -16,6 +16,11 @@
                 <input asp-for="Title" class="form-control" />
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
+            <div class="form-group col-md-4">
+                <label asp-for="Annotation" class="control-label"></label>
+                <textarea asp-for="Annotation" class="form-control"></textarea>
+                <span asp-validation-for="Annotation" class="text-danger"></span>
+            </div>
             <div class="form-group">
                 <label asp-for="Description" class="control-label"></label>
                 <textarea asp-for="Description" id="editor"></textarea>

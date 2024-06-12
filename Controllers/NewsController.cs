@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NewsModule.Data;
 using NewsModule.Models;
 using Npgsql;
 using System.Data;
@@ -12,50 +13,23 @@ namespace NewsModule.Controllers
         // GET: NewsController
         public ActionResult Index()
         {
-
-            List<Article> dispArt = new List<Article>();
-            NpgsqlConnection conn = new NpgsqlConnection("Server=localhost;Port=5432;Database=NewsDB;User Id=postgres;Password=12345;");
-            conn.Open();
-            NpgsqlCommand cmd = new NpgsqlCommand();
-            cmd.Connection = conn;
-            cmd.CommandType = CommandType.Text;
-            cmd.CommandText = "SELECT * FROM NewsTable";
-            NpgsqlDataReader sdr = cmd.ExecuteReader();
-            while (sdr.Read())
+            List<Article> articles = new List<Article>();
+            using(NewsModuleContext db = new NewsModuleContext())
             {
-                var article = new Article();
-                article.Id = Convert.ToInt32(sdr["id"]);
-                article.Title = sdr["title"].ToString();
-                article.publishTime = sdr["publishtime"].ToString();
-                article.Description = sdr["text"].ToString();
-                dispArt.Add(article);
+                articles = db.Articles.ToList();
             }
-            conn.Close();
-            return View(dispArt);
+            return View(articles);
             
         }
 
         // GET: NewsController/Details/5
         public ActionResult Details(int id)
         {
-            //var art2 = new Article(1, "ad", "asd", DateTime.Now);
-            NpgsqlConnection conn = new NpgsqlConnection("Server=localhost;Port=5432;Database=NewsDB;User Id=postgres;Password=12345;");
-            conn.Open();
-            NpgsqlCommand cmd = new NpgsqlCommand();
-            cmd.Connection = conn;
-            cmd.CommandType = CommandType.Text;
-            cmd.CommandText = $"SELECT * FROM NewsTable WHERE id = {id}";
-            NpgsqlDataReader sdr = cmd.ExecuteReader();
-            var article = new Article();
-            while (sdr.Read())
-            {
-                article.Id = Convert.ToInt32(sdr["id"]);
-                article.Title = sdr["title"].ToString();
-                article.publishTime = sdr["publishtime"].ToString();
-                article.Description = sdr["text"].ToString();
-                
-            }
-            conn.Close();
+            Article article = new Article();
+           using(NewsModuleContext db = new NewsModuleContext())
+           {
+                article = db.Articles.Find(id);
+           }
             return View(article);
         }
 
@@ -70,16 +44,13 @@ namespace NewsModule.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(Article article)
         {
-            article.publishTime = DateTime.Now.ToString("MM/dd/yyyy HH:mm");
-            
-            NpgsqlConnection conn = new NpgsqlConnection("Server=localhost;Port=5432;Database=NewsDB;User Id=postgres;Password=12345;");
-            conn.Open();
-            
-            await using var cmdI = new NpgsqlCommand($"INSERT INTO NewsTable (title,publishtime,text) VALUES ('{article.Title}','{article.publishTime}','{article.Description}')", conn);
-            await cmdI.ExecuteNonQueryAsync();
-            conn.Close();
+            using(NewsModuleContext db = new NewsModuleContext())
+            {
+                db.Articles.Add(article);
+                db.SaveChanges();
+            }
 
-            return RedirectToAction("Index");         
+            return RedirectToAction("Index");
         }
 
         // GET: NewsController/Edit/5

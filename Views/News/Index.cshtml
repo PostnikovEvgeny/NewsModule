@@ -21,8 +21,15 @@ else
         @foreach (var item in Model)
         {
             <li>
-                <a href="@Url.Action("Details", "News", new { id = item.Id })">@item.Title </a>
-                   Дата публикации: @item.publishTime
+                <div class="listOfArticles">
+                    <div class="textBlockForArticles">
+                        <a href="@Url.Action("Details", "News", new { id = item.Id })">@item.Title  </a><br />
+                        @item.Annotation<br />
+                        Дата публикации: @item.publishTime
+                    </div>
+                    
+                </div>
+                
 
             </li>
         }
