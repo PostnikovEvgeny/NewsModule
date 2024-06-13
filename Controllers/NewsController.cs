@@ -11,33 +11,38 @@ namespace NewsModule.Controllers
 {
     public class NewsController : Controller
     {
+        IWebHostEnvironment _env = null;
+        public NewsController(IWebHostEnvironment env)
+        {
+            _env = env;
+        }
         // GET: NewsController
         public ActionResult Index()
         {
             List<Article> articles = new List<Article>();
-            using(NewsModuleContext db = new NewsModuleContext())
+            using (NewsModuleContext db = new NewsModuleContext())
             {
                 articles = db.Articles.ToList();
             }
             return View(articles);
-            
+
         }
 
         // GET: NewsController/Details/5
         public ActionResult Details(int id)
         {
-           Article article = new Article();
-           using(NewsModuleContext db = new NewsModuleContext())
-           {
+            Article article = new Article();
+            using (NewsModuleContext db = new NewsModuleContext())
+            {
                 article = db.Articles.Find(id);
-           }
+            }
             return View(article);
         }
 
         // GET: NewsController/Create
         public ActionResult Create()
         {
-            
+
             return View();
         }
 
@@ -45,7 +50,7 @@ namespace NewsModule.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(Article article)
         {
-            using(NewsModuleContext db = new NewsModuleContext())
+            using (NewsModuleContext db = new NewsModuleContext())
             {
                 db.Articles.Add(article);
                 db.SaveChanges();
@@ -55,7 +60,7 @@ namespace NewsModule.Controllers
         }
 
         // GET: NewsController/Edit/5
-        public  IActionResult Edit(int id)
+        public IActionResult Edit(int id)
         {
             Article? article = new Article();
             using (NewsModuleContext db = new NewsModuleContext())
@@ -66,7 +71,7 @@ namespace NewsModule.Controllers
                 }
             }
             return View(article);
-           
+
         }
 
         // POST: NewsController/Edit/5
@@ -114,6 +119,23 @@ namespace NewsModule.Controllers
                 }
             }
             return RedirectToAction("Index");
+        }
+
+
+        [HttpPost]
+        public ActionResult UploadImage(List<IFormFile> files)
+        {
+            var filepath = "";
+            foreach(IFormFile photo in Request.Form.Files)
+            {
+                string serverMapPath = Path.Combine(_env.WebRootPath, "Image", photo.FileName);
+                using(var stream = new FileStream(serverMapPath,FileMode.Create))
+                {
+                    photo.CopyTo(stream);
+                }
+                filepath = "https://localhost:7146/" + "Image/" + photo.FileName;
+            }
+            return Json(new { url = filepath });
         }
     }
 }

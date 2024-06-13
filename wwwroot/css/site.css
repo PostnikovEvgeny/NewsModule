@@ -38,3 +38,11 @@ a {
     margin-left: 10px;
     word-break: break-all;
 }
+.descriptionClass {
+    text-align: justify;
+    word-break: break-all;
+}
+img {
+    max-width: 100%;
+    height:auto;
+}
