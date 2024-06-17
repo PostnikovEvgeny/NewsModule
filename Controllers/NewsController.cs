@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NewsModule.Data;
@@ -40,6 +41,8 @@ namespace NewsModule.Controllers
         }
 
         // GET: NewsController/Create
+        //[Authorize(Roles = "user, admin")]
+        [Authorize]
         public ActionResult Create()
         {
 
@@ -48,6 +51,8 @@ namespace NewsModule.Controllers
 
         // POST: NewsController/Create
         [HttpPost]
+        //[Authorize(Roles = "user, admin")]
+        [Authorize]
         public async Task<IActionResult> Create(Article article)
         {
             using (NewsModuleContext db = new NewsModuleContext())
@@ -60,6 +65,8 @@ namespace NewsModule.Controllers
         }
 
         // GET: NewsController/Edit/5
+        //[Authorize(Roles = "admin")]
+        [Authorize]
         public IActionResult Edit(int id)
         {
             Article? article = new Article();
@@ -76,6 +83,8 @@ namespace NewsModule.Controllers
 
         // POST: NewsController/Edit/5
         [HttpPost]
+        //[Authorize(Roles = "admin")]
+        [Authorize]
         public async Task<IActionResult> Edit(Article article)
         {
             using (NewsModuleContext db = new NewsModuleContext())
@@ -87,6 +96,8 @@ namespace NewsModule.Controllers
         }
 
         // GET: NewsController/Delete/5
+        //[Authorize(Roles = "user, admin")]
+        [Authorize]
         public ActionResult Delete(int id)
         {
             Article? article = new Article();
@@ -104,6 +115,8 @@ namespace NewsModule.Controllers
         //[ValidateAntiForgeryToken]
         [HttpPost]
         [ActionName("Delete")]
+        //[Authorize(Roles = "user, admin")]
+        [Authorize]
         public IActionResult ConfirmDelete(int id)
         {
             using (NewsModuleContext db = new NewsModuleContext())
