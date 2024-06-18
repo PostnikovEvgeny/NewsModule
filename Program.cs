@@ -2,8 +2,13 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.CookiePolicy;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using NewsModule.Data;
+using NewsModule.Models;
 using NewsModule.Services.Jwt;
+using System.Configuration;
 
 namespace NewsModule
 {
@@ -13,6 +18,11 @@ namespace NewsModule
         {
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddControllersWithViews();
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+            builder.Services.AddDbContext<NewsModuleContext>(options => options.UseNpgsql(connectionString));
+
+            builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<NewsModuleContext>();
 
 
             //jwt
@@ -47,7 +57,10 @@ namespace NewsModule
 
             
 
-            builder.Services.AddAuthorization();
+            builder.Services.AddAuthorization(option =>
+            {
+                option.AddPolicy("OnlyAdmin",policyBuilder=>policyBuilder.RequireClaim("Role","Admin"));
+            });
             
 
 
@@ -62,7 +75,6 @@ namespace NewsModule
             });
 
 
-            app.UseAuthentication();
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
@@ -78,6 +90,7 @@ namespace NewsModule
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(

@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Options;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using NewsModule.Data;
 using NewsModule.Models;
 using Npgsql;
@@ -12,122 +14,113 @@ namespace NewsModule.Controllers
 {
     public class NewsController : Controller
     {
+        NewsModuleContext context;
+
         IWebHostEnvironment _env = null;
-        public NewsController(IWebHostEnvironment env)
+        public NewsController(IWebHostEnvironment env, NewsModuleContext context)
         {
             _env = env;
+            this.context=context;
+            
         }
-        // GET: NewsController
+
         public ActionResult Index()
         {
+
             List<Article> articles = new List<Article>();
-            using (NewsModuleContext db = new NewsModuleContext())
+            using (context)
             {
-                articles = db.Articles.ToList();
+                articles = context.Articles.ToList();
             }
             return View(articles);
 
         }
 
-        // GET: NewsController/Details/5
         public ActionResult Details(int id)
         {
             Article article = new Article();
-            using (NewsModuleContext db = new NewsModuleContext())
+            using (context)
             {
-                article = db.Articles.Find(id);
+                article = context.Articles.Find(id);
             }
             return View(article);
         }
 
-        // GET: NewsController/Create
-        //[Authorize(Roles = "user, admin")]
-        [Authorize]
+        [Authorize] 
         public ActionResult Create()
         {
 
             return View();
         }
 
-        // POST: NewsController/Create
         [HttpPost]
-        //[Authorize(Roles = "user, admin")]
         [Authorize]
         public async Task<IActionResult> Create(Article article)
         {
-            using (NewsModuleContext db = new NewsModuleContext())
+            using (context)
             {
-                db.Articles.Add(article);
-                db.SaveChanges();
+                context.Articles.Add(article);
+                context.SaveChanges();
             }
 
             return RedirectToAction("Index");
         }
 
-        // GET: NewsController/Edit/5
-        //[Authorize(Roles = "admin")]
-        [Authorize]
+        [Authorize("OnlyAdmin")]
         public IActionResult Edit(int id)
         {
             Article? article = new Article();
-            using (NewsModuleContext db = new NewsModuleContext())
+            using (context)
             {
                 if (id != null)
                 {
-                    article = db.Articles.FirstOrDefault(p => p.Id == id);
+                    article = context.Articles.FirstOrDefault(p => p.Id == id);
                 }
             }
             return View(article);
 
         }
 
-        // POST: NewsController/Edit/5
         [HttpPost]
-        //[Authorize(Roles = "admin")]
-        [Authorize]
+        [Authorize("OnlyAdmin")]
         public async Task<IActionResult> Edit(Article article)
         {
-            using (NewsModuleContext db = new NewsModuleContext())
+            using (context)
             {
-                db.Articles.Update(article);
-                await db.SaveChangesAsync();
+                context.Articles.Update(article);
+                await context.SaveChangesAsync();
             }
             return RedirectToAction("Index");
         }
 
-        // GET: NewsController/Delete/5
-        //[Authorize(Roles = "user, admin")]
-        [Authorize]
+        [Authorize("OnlyAdmin")]
         public ActionResult Delete(int id)
         {
             Article? article = new Article();
-            using (NewsModuleContext db = new NewsModuleContext())
+            using (context)
             {
                 if (id != null)
                 {
-                    article = db.Articles.FirstOrDefault(p => p.Id == id);
+                    article = context.Articles.FirstOrDefault(p => p.Id == id);
                 }
             }
             return View(article);
         }
 
-        // POST: NewsController/Delete/5
-        //[ValidateAntiForgeryToken]
         [HttpPost]
         [ActionName("Delete")]
-        //[Authorize(Roles = "user, admin")]
-        [Authorize]
+        [Authorize("OnlyAdmin")]
         public IActionResult ConfirmDelete(int id)
         {
-            using (NewsModuleContext db = new NewsModuleContext())
+            using (context)
             {
                 if (id != null)
                 {
-                    Article? article = db.Articles.FirstOrDefault(p => p.Id == id);
+                    Article? article = context.Articles.FirstOrDefault(p => p.Id == id);
                     if (article != null)
                     {
-                        db.Articles.Remove(article);
-                        db.SaveChanges();
+                        context.Articles.Remove(article);
+                        context.SaveChanges();
                     }
                 }
             }

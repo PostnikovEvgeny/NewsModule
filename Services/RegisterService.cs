@@ -8,15 +8,20 @@ namespace NewsModule.Services
     {
         JwtProvider jwtProvider = new JwtProvider();
         PasswordHasher hasher = new PasswordHasher();
+        NewsModuleContext context;
 
-        public void Register(int id, string userName, string email, string password, string role)
+        public RegisterService(NewsModuleContext context)
+        {
+            this.context = context;
+        }
+        public void Register(int id, string userName, string email, string password, enumRoles role)
         {
             User user=null;
-            using (NewsModuleContext db = new NewsModuleContext())
+            using (context)
             {
                 if (email != null)
                 {
-                    user = db.Users.FirstOrDefault(p => p.Email == email);
+                    user = context.Users.FirstOrDefault(p => p.Email == email);
                 }
             }
             if (user == null)
@@ -24,24 +29,24 @@ namespace NewsModule.Services
                 string hashedPassword = hasher.Generate(password);
 
                 User newUser = new User(id, userName, email, hashedPassword, role);
-                using (NewsModuleContext db = new NewsModuleContext())
+                using (context)
                 {
-                    db.Users.Add(newUser);
-                    db.SaveChanges();
+                    context.Users.Add(newUser);
+                    context.SaveChanges();
                 }
 
             }
         }
             
         
-        public string Login(string email,string password)
+        /*public string Login(string email,string password)
         {
             User user = new User();
-            using (NewsModuleContext db = new NewsModuleContext())
+            using (context)
             {
                 if (email != null)
                 {
-                    user = db.Users.FirstOrDefault(p => p.Email == email);
+                    user = context.Users.FirstOrDefault(p => p.Email == email);
                 }   
             }
             var result = hasher.Verify(password,user.PasswordHash);
@@ -56,6 +61,6 @@ namespace NewsModule.Services
 
             return token;   
 
-        }
+        }*/
     }
 }

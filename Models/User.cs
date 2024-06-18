@@ -7,22 +7,26 @@ using System.Security.Policy;
 namespace NewsModule.Models
 {
     [Index(nameof(Email), IsUnique = true)]
-    public class User
+    public class User:IdentityUser
     {
         [Key]
         public int Id { get; set; }
         [Required]
         [MaxLength(30)]
-        public string UserName { get; set; }
+        public override string UserName { get; set; }
         [Required]
-        public string Email { get; set; }
+        [DataType(DataType.EmailAddress)]
+        public override string Email { get; set; }
         [Required]
-        public string PasswordHash { get; set; }
-        
-        public string Role { get; set; }
+        [DataType(DataType.Password)]
+        public override string PasswordHash { get; set; }
+
+
+        [Required]
+        public enumRoles Role { get; set; }
         
 
-        public User(int id, string userName, string email, string password, string role) 
+        public User(int id, string userName, string email, string password, enumRoles role) 
         {
             this.Id = id;
             this.UserName = userName;
@@ -36,7 +40,7 @@ namespace NewsModule.Models
             this.UserName = "userName";
             this.PasswordHash = "password";
             this.Email = "email";
-            this.Role = "user";
+            this.Role = enumRoles.User;
         }
 
     }   

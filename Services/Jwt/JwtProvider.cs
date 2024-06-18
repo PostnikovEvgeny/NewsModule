@@ -12,9 +12,11 @@ namespace NewsModule.Services.Jwt
     {
         private readonly JwtOptions options = new JwtOptions();
 
-        public string GenerateToken(User user)
+        public string GenerateToken(User user,IEnumerable<Claim> userClaims)
         {
-            Claim[] claims = [new("userId", user.Id.ToString())];
+            var claims = userClaims.ToList();
+            claims.Add(new Claim(ClaimTypes.Name, user.UserName));
+            //Claim[] claims = [new("userId", user.Id.ToString())];
 
 
             var token = new JwtSecurityToken(
