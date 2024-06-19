@@ -36,17 +36,12 @@ namespace NewsModule.Controllers
         public async Task<IActionResult> Register(User user)
         {
 
-            //User user = new User { Email = model.Email, UserName = model.Email, Year = model.Year };
-            // добавляем пользователя
             var result = await _userManager.CreateAsync(user, user.PasswordHash);
             if (result.Succeeded)
             {
-                // установка куки
                 await _signInManager.SignInAsync(user, false);
                 List<Claim> claims = new List<Claim>();
                 claims.Add(new Claim("Role",user.Role.ToString()));
-                //claims.Add(new Claim("Role",user.Role.ToString()));
-                //claims.Add(new Claim(ClaimTypes.Email,user.Email.ToString()));
                 await _userManager.AddClaimsAsync(user,claims);
 
 
@@ -60,7 +55,6 @@ namespace NewsModule.Controllers
                 }
             }
 
-            //service.Register(user.Id,user.UserName,user.Email,user.PasswordHash,user.Role);
             return RedirectToAction("Index","Home");
         }
 
@@ -72,9 +66,6 @@ namespace NewsModule.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(User user)
         {
-            //var token = service.Login(user.Email,user.PasswordHash);
-
-            //return (IActionResult)Results.Ok(token);
             var _user = await _userManager.FindByEmailAsync(user.Email);
             var result = await _signInManager.PasswordSignInAsync(_user,user.PasswordHash,false,false);
             if(result.Succeeded)
@@ -90,11 +81,8 @@ namespace NewsModule.Controllers
             
         }
 
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
-            // удаляем аутентификационные куки
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }

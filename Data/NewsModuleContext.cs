@@ -17,17 +17,6 @@ namespace NewsModule.Data
             Database.EnsureCreated();
             //Database.EnsureDeleted();
         }
-        /*protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            var config = new ConfigurationBuilder()
-                       .AddJsonFile("appsettings.json")
-                       .SetBasePath(Directory.GetCurrentDirectory())
-                       .Build();
-
-            optionsBuilder.UseNpgsql(config.GetConnectionString("DefaultConnection"));
-
-
-        }*/
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

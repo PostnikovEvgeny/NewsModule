@@ -16,8 +16,6 @@ namespace NewsModule.Services.Jwt
         {
             var claims = userClaims.ToList();
             claims.Add(new Claim(ClaimTypes.Name, user.UserName));
-            //Claim[] claims = [new("userId", user.Id.ToString())];
-
 
             var token = new JwtSecurityToken(
                 claims: claims,
