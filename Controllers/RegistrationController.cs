@@ -8,6 +8,7 @@ using NewsModule.Services;
 using NewsModule.Data;
 using NewsModule.Services.Jwt;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Diagnostics;
 
 namespace NewsModule.Controllers
 {
@@ -27,6 +28,7 @@ namespace NewsModule.Controllers
             _userManager = userManager;
             _signInManager = signInManager;
         }
+        [HttpGet]
         public IActionResult Register()
         {
 
@@ -53,11 +55,13 @@ namespace NewsModule.Controllers
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
+                return RedirectToAction("Register","Registration");
+
             }
 
-            return RedirectToAction("Index","Home");
         }
-
+        [HttpGet]
+        [Route("/User/Login")]
         public IActionResult Login()
         {
 
@@ -74,10 +78,16 @@ namespace NewsModule.Controllers
                 var token = jwtProvider.GenerateToken(user,claims);
                 HttpContext context = HttpContext;
                 context.Response.Cookies.Append("mycookies", token);
+                return RedirectToAction("Index", "Home");
+
+            }
+            else
+            {
+                ModelState.AddModelError("", $"Задан неверный логин или пароль");
+                return RedirectToAction("Login", "Registration");
 
             }
 
-            return RedirectToAction("Index", "Home");
             
         }
 

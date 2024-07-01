@@ -14,7 +14,7 @@ namespace NewsModule.Data
 
         public NewsModuleContext(DbContextOptions<NewsModuleContext> options) : base(options)
         {
-            Database.EnsureCreated();
+            //Database.EnsureCreated();
             //Database.EnsureDeleted();
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)

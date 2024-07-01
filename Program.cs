@@ -74,6 +74,12 @@ namespace NewsModule
                 Secure = CookieSecurePolicy.Always
             });
 
+            /*builder.Services.ConfigureApplicationCookie(opts =>
+            {
+                opts.LoginPath = "/Registration/Login";
+                opts.AccessDeniedPath = "/AccessDenied"; //путь к странице с информацией о запрете доступа
+            });*/
+
 
 
             // Configure the HTTP request pipeline.
